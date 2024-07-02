@@ -33,3 +33,8 @@ variable "ALB_SG_ID" {
   description = "ALB_SG_ID"
   type        = string
 }
+
+variable "desired_size" {
+  description = "ASG Desired_Capacity"
+  type        = string
+}
