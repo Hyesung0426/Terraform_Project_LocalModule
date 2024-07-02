@@ -34,7 +34,7 @@ variable "ALB_SG_ID" {
   type        = string
 }
 
-variable "desired_size" {
+variable "desired_capacity" {
   description = "ASG Desired_Capacity"
   type        = string
 }

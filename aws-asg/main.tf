@@ -1,24 +1,3 @@
-resource "aws_launch_configuration" "aws_asg_launch" {
-  name            = "${var.name}-asg-launch"
-  image_id        = "ami-0ea4d4b8dc1e46212"
-  instance_type   = var.instance_type
-  security_groups = [var.SSH_SG_ID, var.ALB_SG_ID]
-
-  user_data = <<-EOF
-    #!/bin/bash
-    yum -y update
-    yum -y install httpd.x86_64
-    systemctl start httpd.service
-    systemctl enable httpd.service
-    echo "DB Endpoint: ${data.terraform_remote_state.rds_remote_data.outputs.rds_instance_address}" > /var/www/html/index.html
-    echo "DB Port: ${data.terraform_remote_state.rds_remote_data.outputs.rds_instance_port}" >> /var/www/html/index.html
-  EOF
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
 # AWS KEY-Pair Data Source (Update)
 data "aws_key_pair" "EC2-Key" {
   key_name = "EC2-key"
@@ -103,13 +82,11 @@ resource "aws_cloudwatch_metric_alarm" "aws_asg_cpu_alarm_in" {
   # 비교 연산자의 조건을 만족했을때 수행 할 작업정의
 }
 
-
-
 # Desired_Size 지정
 resource "aws_autoscaling_group" "aws_asg" {
   name                 = "${var.name}-asg"
   launch_configuration = aws_launch_configuration.aws_asg_launch.name
-  desired_size         = var.desired_size # (Update)
+  desired_capacity     = var.desired_capacity # (Update)
   min_size             = var.min_size
   max_size             = var.max_size
   vpc_zone_identifier  = var.private_subnets
